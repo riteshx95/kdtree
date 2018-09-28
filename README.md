@@ -1,2 +1,2 @@
 # kdtree
-Working on a simple kd-tree
+kd-tree with nearest neighbour search in 3d
