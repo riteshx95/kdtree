@@ -7,5 +7,5 @@ Kdnode::Kdnode(Vectr point, int dimension) {
   right = NULL;
   parent = NULL;
   dim = dimension;
-  checked = false;
+  index = 0;
 }

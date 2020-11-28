@@ -1,6 +1,14 @@
 #include <cmath>
+//#include <cstdlib>
+#include <random>
 #include <iostream>
 #include <Vectr.h>
+
+Vectr::Vectr() {
+  x[0] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  x[1] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+  x[2] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+}
 
 Vectr::Vectr(float a, float b, float c) {
   x[0] = a; x[1] = b; x[2] = c;

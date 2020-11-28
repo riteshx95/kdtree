@@ -34,11 +34,14 @@ void Kdtree::add(Vectr point) {
   if(!parent) {
     // needs root
     root = new Kdnode(point, 0);
+    root->index = nodes.size();
     nodes.push_back(root);
+
   }
   else {
     Kdnode *newNode = new Kdnode(point, (parent->dim + 1) % 3);
     newNode->parent = parent;
+    newNode->index = nodes.size();
     nodes.push_back(newNode);
     ((parent->leftOrRight)?parent->right:parent->left) = newNode;
   }
@@ -58,31 +61,33 @@ Kdnode* Kdtree::suckyFindNearest(Vectr point) {
 }
 
 Vectr Kdtree::findNearest(Vectr point) {
+  int checked[(int)nodes.size()] = {0};
   Kdnode *closest = parentNodeFor(point), *parent = closest->parent;
   if(closest->me == point) {
     return closest->me;
   }
 
   while(parent) {
-    Kdnode *temp = searchSubtreeAt(parent, point, closest);
+    Kdnode *temp = searchSubtreeAt(parent, point, closest, checked);
     if(distance(point, temp->me) < distance(point, closest->me)) {
       closest = temp;
     }
     parent = parent->parent;
   }
+
   return closest->me;
 }
 
-Kdnode* Kdtree::searchSubtreeAt(Kdnode *subroot, Vectr point, Kdnode *closest) {
+Kdnode* Kdtree::searchSubtreeAt(Kdnode *subroot, Vectr point, Kdnode *closest, int *check) {
   if(!subroot) {
     return closest;
   }
 
-  if(subroot->checked) {
+  if(check[subroot->index]) {
     return closest;
   }
+  check[subroot->index] = 1;
 
-  subroot->checked = true;
   Kdnode *temp;
   float dimDist, closeDist = distance(point, closest->me);
 
@@ -95,25 +100,25 @@ Kdnode* Kdtree::searchSubtreeAt(Kdnode *subroot, Vectr point, Kdnode *closest) {
   if(fabs(dimDist) > closeDist) { // ignore one of the subtrees
     if(dimDist > 0) {
       // ignore left subtree, traverse right subtree
-      temp = searchSubtreeAt(subroot->right, point, closest);
+      temp = searchSubtreeAt(subroot->right, point, closest, check);
       if(distance(point, temp->me) < closeDist) {
         closest = temp;
       }
     }
     else {
       // ignore right subtree, traverse left subtree
-      temp = searchSubtreeAt(subroot->left, point, closest);
+      temp = searchSubtreeAt(subroot->left, point, closest, check);
       if(distance(point, temp->me) < closeDist) {
         closest = temp;
       }
     }
   }
   else { // don't ignore the subtrees, traverse both
-    temp = searchSubtreeAt(subroot->right, point, closest);
+    temp = searchSubtreeAt(subroot->right, point, closest, check);
     if(distance(point, temp->me) < closeDist) {
       closest = temp;
     }
-    temp = searchSubtreeAt(subroot->left, point, closest);
+    temp = searchSubtreeAt(subroot->left, point, closest, check);
     if(distance(point, temp->me) < distance(point, closest->me)) {
       closest = temp;
     }
@@ -130,12 +135,12 @@ void Kdtree::print() {
   printf("Printing ..\n");
   for(int i = 0; i < nodes.size(); i++) {
     printf("------------------------------------\n");
-    printf("Point: (%f, %f)\n", nodes[i]->me.x[0], nodes[i]->me.x[1]);
+    printf("Point: (%f, %f, %f)\n", nodes[i]->me.x[0], nodes[i]->me.x[1], nodes[i]->me.x[2]);
     if(nodes[i]->left) {
-      printf(" Left: (%f, %f)\n", nodes[i]->left->me.x[0], nodes[i]->left->me.x[1]);
+      printf(" Left: (%f, %f)\n", nodes[i]->left->me.x[0], nodes[i]->left->me.x[1], nodes[i]->left->me.x[2]);
     }
     if(nodes[i]->right) {
-      printf("Right: (%f, %f)\n", nodes[i]->right->me.x[0], nodes[i]->right->me.x[1]);
+      printf("Right: (%f, %f)\n", nodes[i]->right->me.x[0], nodes[i]->right->me.x[1], nodes[i]->right->me.x[2]);
     }
   }
 }

@@ -4,7 +4,7 @@ class Vectr {
 public:
   float x[3];
 
-  Vectr() {}
+  Vectr();
   Vectr(float a, float b, float c);
 
   float mag();

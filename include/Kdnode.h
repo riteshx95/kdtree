@@ -9,7 +9,7 @@ public:
   Kdnode *left, *right, *parent;
   int dim;
   int leftOrRight;
-  bool checked;
+  int index;
 
   Kdnode(Vectr point, int dimension);
 };
